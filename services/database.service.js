@@ -1,71 +1,63 @@
 'use strict';
 
+const sequelize = require('./sequelize.service').connect();
+// const logger = require('./logger.service');
+const User = require('../models/user');
 /**
  * Sequelize db server config connection
  * @Class DatabaseService
  * @author Frederick BALDO
  * @Date 30/06/2017.
  */
-class DatabaseService {    
-    constructor() {
-//        this.sequelize = require('sequelize-heroku').connect();
-        this.sequelize = require('./sequelize.service').connect();
-        this.models = [];
-        this.init();
-    }
-    init() {        
-        if (!this.sequelize) {
-            console.error('Database environnement var not found');
-            return;
-        } else {
-            this.sequelize.authenticate().then( () => {
-                const config = sequelize.connectionManager.config;
-                console.log('sequelize-heroku: Connected to '+config.host+' as '+config.username+'.');
-                
-                // Create the tables if not exists
-                this.defineModels();
-            }).catch( function(err) {
-                const config = sequelize.connectionManager.config;
-                console.log('Sequelize: Error connecting '+config.host+' as '+config.user+': '+err);
-            });
-        }
-    }
+const DatabaseService = {
+    models: [],
+    init: function() {
+        return new Promise(function(resolve, reject) {
+            if (!sequelize) {
+                console.error('Database environnement var not found');
+                reject({message: 'Database environnement var not found'});
+            } else {
+                sequelize.authenticate().then( function() {
+                    const config = sequelize.connectionManager.config;
+                    console.log('sequelize-heroku: Connected to '+config.host+' as '+config.username+'.');
+                    resolve(true);
+                }).catch( function(err) {
+                    const config = sequelize.connectionManager.config;
+                    console.log('Sequelize: Error connecting '+config.host+' as '+config.user+': '+err);
+                    reject({message: 'Sequelize: Error connecting '+config.host+' as '+config.user+': '+err})
+                });
+            }
+        });
+    },
     /**
+     * Create the tables if not exists
      * Set models in ORM cache and create the tables if not exists
      */
-    defineModels() {
-        const User = require('../models/user');
-        this.models.push(this.define('user', User));
-        
+    defineModels: function () {
+        this.models.push(sequelize.define('user', User));
+
         for (let model of this.models) {
             this.register(model);
             console.log('Tables ', model.name, ' found.');
         }
-        
-    }
-    register(model) {
+    },
+    register: function(model) {
         model.sync({alter: true}); // force: true to drop the tables before
-    }
-
-    /** Tables relations */
-    makeRelations() {
+    },
+    /**
+     * Tables relations
+     */
+    makeRelations: function() {
         if (User) {
             // User.hasOne(Role);
         }
-    }
-    define(name, model) {
-        return this.sequelize.define(name, model);
-    }
-    
-    getOrm() {
-        return this.sequelize;
-    }
-    
-    getModels() {
+    },
+    getOrm: function () {
+        return sequelize;
+    },
+    getModels: function () {
         return this.models;
     }
-}
+};
 
-const dbManager = new DatabaseService();
-
-module.exports = dbManager;
+module.exports = DatabaseService;

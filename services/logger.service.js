@@ -9,7 +9,7 @@ config.file.filename = `${path.join(config.directory, '../logs')}/${config.file.
 mkdirp.sync(path.join(config.directory, '../logs'));
 fs.open(config.file.filename, 'wx', function(err) {
     if (err) {
-        if (err.code !== 'EEXISIT') {
+        if (err.code !== 'EEXIST') {
             console.error(err.message);
         }
     }

@@ -34,7 +34,11 @@ require('./routes/auth.routes.js')(app);
 require('./routes/user.routes.js')(app);
 
 // Database
-require(__dirname + '/services/database.service');
+const DatabaseService = require(__dirname + '/services/database.service');
+DatabaseService.init().then(function () {
+    DatabaseService.defineModels()}).catch(function(error) {
+    console.error(error);
+});
 
 app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));

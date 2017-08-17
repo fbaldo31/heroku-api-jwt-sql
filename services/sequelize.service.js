@@ -17,12 +17,12 @@ module.exports = {
                 base: dbOptions[1],
                 options: {
                     dialect: 'mysql',
-//                        protocol: 'mysql',
+                    protocol: 'mysql',
                     host: dbOptions[0].split(':')[0],
                     port: dbOptions[0].split(':')[1],
                     logging: false,
                     dialectOptions: {
-                        ssl: true
+                        ssl: false
                     }
                 }
             };
@@ -51,11 +51,8 @@ module.exports = {
             
         }
         
-        if (typeof config !== 'undefined')
-        {
-            const sequelize = new Sequelize(config.base, config.user, config.pass, config.options);
-            
-            return sequelize;
+        if (typeof config !== 'undefined') {
+            return new Sequelize(config.base, config.user, config.pass, config.options);
         }
         
         return false;

@@ -1,5 +1,7 @@
-// Dev mode
-if (!process.env.CLEARDB_DATABASE_URL) {    
+process.env.DEV_MODE = false;
+if (!process.env.CLEARDB_DATABASE_URL) {
+    process.env.DEV_MODE = true;
+    // Set here local database connection
     process.env.CLEARDB_DATABASE_URL='mysql://root:@localhost:3306/node_api';
 }
 
@@ -8,9 +10,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 
 const logger = require('./services/logger.service');
-//const jwtOptions = require('./config/options').jwtStrategy;
 const app = express();
-
 app.set('port', (process.env.PORT || 5000));
 app.use(morgan('combined', {skip: logger.skip, stream: logger.stream}));
 // parse application/x-www-form-urlencoded

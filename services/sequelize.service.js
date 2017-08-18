@@ -5,16 +5,16 @@ const Sequelize = require('sequelize');
 module.exports = {
 
     connect: function() {
-        let config; 
+        let userOptions, dbOptions, config;
         // Look for ClearDB MySQL Add-on
         if (process.env.CLEARDB_DATABASE_URL) {
-            const userOptions = process.env.CLEARDB_DATABASE_URL.split('@')[0].split('//')[1].split(':');
-            const dbOptions = process.env.CLEARDB_DATABASE_URL.split('@')[1].split('/');
+            userOptions = process.env.CLEARDB_DATABASE_URL.split('@')[0].split('//')[1].split(':');
+            dbOptions = process.env.CLEARDB_DATABASE_URL.split('@')[1].split('/');
 
             config = {
-                user: userOptions[0],
+                user: process.env.DEV_MODE ? userOptions[0] : userOptions[0].split('@')[0],
                 pass: userOptions[1],
-                base: dbOptions[1],
+                base: process.env.DEV_MODE ? dbOptions[1] : dbOptions[1].split('?reconnect=true')[0],
                 options: {
                     dialect: 'mysql',
                     protocol: 'mysql',
@@ -30,8 +30,8 @@ module.exports = {
         
         // Else, lookf for Heroky Postgresql
         else if (process.env.DATABASE_URL) {
-            const userOptions = process.env.DATABASE_URL.split('@')[0].split('//')[1].split(':');
-            const dbOptions = process.env.DATABASE_URL.split('@')[1].split('/');
+            userOptions = process.env.DATABASE_URL.split('@')[0].split('//')[1].split(':');
+            dbOptions = process.env.DATABASE_URL.split('@')[1].split('/');
             
             config = {
                 user: userOptions[0],
@@ -48,7 +48,6 @@ module.exports = {
                     }
                 }
             };
-            
         }
         
         if (typeof config !== 'undefined') {
@@ -57,5 +56,4 @@ module.exports = {
         
         return false;
     }
-    
 };

@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const jwtOptions = require('../config/options').jwtStrategy;
 
-const AutService = {
+const AuthService = {
     jwtCheck: check(jwtOptions),
     requireScope: function(scope) {
         return function (req, res, next) {
@@ -61,4 +61,4 @@ const AutService = {
     }
 };
 
-module.exports = AutService;
+module.exports = AuthService;

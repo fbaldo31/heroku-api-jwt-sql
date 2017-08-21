@@ -1,5 +1,3 @@
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-
 const now = new Date().getYear() + '_' + new Date().getMonth().toLocaleString() + '_' + new Date().getDate().toLocaleString();
 
 const Options = {

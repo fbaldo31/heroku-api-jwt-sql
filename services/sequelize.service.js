@@ -5,6 +5,16 @@ const Sequelize = require('sequelize');
 module.exports = {
 
     connect: function() {
+        let sequelize;
+        if (process.env.CLEARDB_DATABASE_URL) {
+            console.log(process.env.CLEARDB_DATABASE_URL);
+            return sequelize = require('sequelize-heroku');
+        }
+        if (!process.env.CLEARDB_DATABASE_URL) {
+            // Set here local database connection
+            process.env.CLEARDB_DATABASE_URL='mysql://root:@localhost:3306/node_api';
+        }
+
         let userOptions, dbOptions, config;
         // Look for ClearDB MySQL Add-on
         if (process.env.CLEARDB_DATABASE_URL) {
@@ -12,9 +22,9 @@ module.exports = {
             dbOptions = process.env.CLEARDB_DATABASE_URL.split('@')[1].split('/');
 
             config = {
-                user: process.env.DEV_MODE ? userOptions[0] : userOptions[0].split('@')[0],
+                user: userOptions[0],
                 pass: userOptions[1],
-                base: process.env.DEV_MODE ? dbOptions[1] : dbOptions[1].split('?reconnect=true')[0],
+                base: dbOptions[1],
                 options: {
                     dialect: 'mysql',
                     protocol: 'mysql',
